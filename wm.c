@@ -135,12 +135,12 @@ void switch_desktop()
 
 void switch_window()
 {
-	unsigned char *current_window_data;
+	unsigned char *current_window_data, *desktop_data;
 	Window root, current_window;
 	int i;
 
 	root = XDefaultRootWindow(display);
-
+	
 	if ( get_property(root, "_NET_ACTIVE_WINDOW", &current_window_data) < 0)
 	{
 		return;
@@ -148,7 +148,6 @@ void switch_window()
 
 	current_window = *((Window *) current_window_data);
 	XFree(current_window_data);
-	printf("cw: %ld ", (unsigned long) current_window);
 
 	for (i=0; i<top_level_window_list.length 
 	         && top_level_window_list.set[i] != current_window; i++);
@@ -156,6 +155,13 @@ void switch_window()
 	// will be replaced with init windowz
 	if (i == top_level_window_list.length) return;
 	else if (i == top_level_window_list.length-1) i=-1;
+
+	if ( get_property(top_level_window_list.set[i+1], "_NET_WM_DESKTOP", &desktop_data) < 0)
+	{
+		return;
+	}
+
+	send_message("_NET_CURRENT_DESKTOP", root, *((unsigned long *) desktop_data));
 
 	send_message("_NET_ACTIVE_WINDOW", top_level_window_list.set[i+1], 0);
 }
