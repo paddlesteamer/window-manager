@@ -1,5 +1,3 @@
-#include <unistd.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <X11/Xlib.h>
@@ -179,17 +177,17 @@ static int get_property(Window win, const char * prop_name, unsigned char ** dat
 	}
 
 	if ( XGetWindowProperty(display,
-		                      win,
-													prop_type,
-													0L,
-													~0L,
-													False,
-													AnyPropertyType,
-													&ret_prop_type,
-													&ret_format,
-													&ret_length,
-													&ret_bytes_after,
-													&ret_data) != Success )
+	                        win,
+	                        prop_type,
+	                        0L,
+	                        ~0L,
+	                        False,
+	                        AnyPropertyType,
+	                        &ret_prop_type,
+	                        &ret_format,
+	                        &ret_length,
+	                        &ret_bytes_after,
+	                        &ret_data) != Success )
 	{
 		return -1;
 	}
