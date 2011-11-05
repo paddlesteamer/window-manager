@@ -155,7 +155,7 @@ void switch_window()
 	for (i=0; i<top_level_window_list.length 
 	         && top_level_window_list.set[i] != current_window; i++);
 
-	// will be replaced by init windowz
+	// will be replaced with init windowz
 	if (i == top_level_window_list.length) return;
 	else if (i == top_level_window_list.length-1) i=-1;
 
