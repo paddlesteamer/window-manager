@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -51,9 +52,9 @@ static int init_desktop_count()
 
 static int init_top_level_window_list()
 {
-	Window root, win;
+	Window root, *client_list;
 	unsigned char *list_data, *id_data;
-	unsigned long list_length, list_size, *client_list;
+	unsigned long list_length, list_size;
 	unsigned long i;
 
 	if (display == NULL) 
@@ -78,19 +79,16 @@ static int init_top_level_window_list()
 		}
 	}
 
-	client_list = (unsigned long *) list_data;
+	client_list = (Window *) list_data;
 
 	for (i=0; i<list_length; i++) {
-
-		win = (Window) client_list[i];
-
-		if ( get_property(win, "_NET_WM_DESKTOP", &id_data) < 0 )
+		if ( get_property(client_list[i], "_NET_WM_DESKTOP", &id_data) < 0 )
 		{
 			return -1;
 		}
 
 		if ( ((unsigned int *) id_data)[0] != 0xffffffff)
-			top_level_window_list.set[top_level_window_list.length++] = win;
+			top_level_window_list.set[top_level_window_list.length++] = client_list[i];
 		
 		XFree(id_data);
 	}
@@ -212,7 +210,6 @@ static void send_message(const char *type, Window win,
 	Window root;
 	XEvent event;
 	long mask = SubstructureRedirectMask | SubstructureNotifyMask;
-	int r;
 
 	root = XDefaultRootWindow(display);
 
@@ -228,8 +225,7 @@ static void send_message(const char *type, Window win,
 	event.xclient.data.l[3] = 0;
 	event.xclient.data.l[4] = 0;
 
-	r = XSendEvent(display, root, False, mask, &event);
-	printf("r: %d\n", r);
+	XSendEvent(display, root, False, mask, &event);
 
 	XFlush(display);
 }
