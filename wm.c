@@ -10,7 +10,9 @@
 static int init_desktop_count();
 static int init_top_level_window_list();
 static int get_property(Window win, const char * prop_name, unsigned char ** data);
-static void send_message(const char *type, Window win, unsigned long data0);
+static void send_message(const char *type, Window win, 
+                        unsigned long data0, unsigned long data1, unsigned long data2,
+                        unsigned long data3, unsigned long data4);
 
 static struct {
 	Window *set;
@@ -120,6 +122,8 @@ void switch_desktop()
 	unsigned char *desk_num;
 	unsigned long new_desk_num;
 
+	if (display == NULL) return;
+
 	root = XDefaultRootWindow(display);
 
 	if ( get_property(root, "_NET_CURRENT_DESKTOP", &desk_num) < 0)	
@@ -130,7 +134,7 @@ void switch_desktop()
 	new_desk_num = (*((unsigned long *) desk_num) + 1) % desktop_count;
 	XFree(desk_num);
 
-	send_message("_NET_CURRENT_DESKTOP", root, new_desk_num);
+	send_message("_NET_CURRENT_DESKTOP", root, new_desk_num, 0, 0, 0, 0);
 }
 
 void switch_window()
@@ -138,6 +142,8 @@ void switch_window()
 	unsigned char *current_window_data, *desktop_data;
 	Window root, current_window;
 	int i;
+
+	if (display == NULL) return;
 
 	root = XDefaultRootWindow(display);
 	
@@ -161,9 +167,76 @@ void switch_window()
 		return;
 	}
 
-	send_message("_NET_CURRENT_DESKTOP", root, *((unsigned long *) desktop_data));
+	send_message("_NET_CURRENT_DESKTOP", root, *((unsigned long *) desktop_data), 0, 0, 0, 0);
 
-	send_message("_NET_ACTIVE_WINDOW", top_level_window_list.set[i+1], 0);
+	send_message("_NET_ACTIVE_WINDOW", top_level_window_list.set[i+1], 0, 0, 0, 0, 0);
+}
+
+void move_window_to(int direction)
+{
+	unsigned char *current_window_data;
+	unsigned long gravity;
+	Window root, current_window, child;
+	XWindowAttributes window_attributes;
+
+	if (display == NULL) return;
+
+	root = XDefaultRootWindow(display);
+
+	if ( get_property(root, "_NET_ACTIVE_WINDOW", &current_window_data) < 0)
+	{
+		return;
+	}
+
+	current_window = *((Window *) current_window_data);
+	XFree(current_window_data);
+
+	if ( XGetWindowAttributes(display, current_window, &window_attributes) == None)
+	{
+		return;
+	}
+
+	if (XTranslateCoordinates(display,
+	                      current_window,
+	                      root,
+	                      window_attributes.x,
+	                      window_attributes.y,
+	                      &window_attributes.x,
+	                      &window_attributes.y,
+												&child) == False)
+	{
+		return;
+	}
+
+	switch(direction)
+	{
+		case WM_RIGHT:
+			window_attributes.x +=50;
+			gravity = 0x100;
+			break;
+		case WM_LEFT:
+			window_attributes.x -= 50; 
+			gravity = 0x1ff;
+			break;
+		case WM_DOWN:
+			window_attributes.y += 50; 
+			gravity = 0x200;
+			break;
+		case WM_UP:
+			window_attributes.y -= 50; 
+			gravity = 0x2ff;
+			break;
+		default:
+			return;
+	}
+
+	send_message("_NET_MOVERESIZE_WINDOW",
+	             current_window,
+							 gravity,
+							 window_attributes.x,
+							 window_attributes.y,
+							 window_attributes.width,
+							 window_attributes.height);
 }
 
 static int get_property(Window win, const char * prop_name, unsigned char ** data)
@@ -211,7 +284,8 @@ static int get_property(Window win, const char * prop_name, unsigned char ** dat
 }
 
 static void send_message(const char *type, Window win, 
-                        unsigned long data0)
+                        unsigned long data0, unsigned long data1, unsigned long data2,
+                        unsigned long data3, unsigned long data4)
 {
 	Window root;
 	XEvent event;
@@ -226,10 +300,10 @@ static void send_message(const char *type, Window win,
 	event.xclient.window = win;
 	event.xclient.format = 32;
 	event.xclient.data.l[0] = data0;
-	event.xclient.data.l[1] = 0;
-	event.xclient.data.l[2] = 0;
-	event.xclient.data.l[3] = 0;
-	event.xclient.data.l[4] = 0;
+	event.xclient.data.l[1] = data1;
+	event.xclient.data.l[2] = data2;
+	event.xclient.data.l[3] = data3;
+	event.xclient.data.l[4] = data4;
 
 	XSendEvent(display, root, False, mask, &event);
 
