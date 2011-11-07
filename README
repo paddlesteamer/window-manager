@@ -1,0 +1,9 @@
+test1:
+	type 'make test1' to compile
+
+	use w,a,s,d to move current active window
+
+test2:
+	type 'make test2' to compile
+
+	use arrow buttons to move current active window and press tab button to switch active window
