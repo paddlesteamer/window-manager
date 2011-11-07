@@ -232,11 +232,11 @@ void move_window_to(int direction)
 
 	send_message("_NET_MOVERESIZE_WINDOW",
 	             current_window,
-							 gravity,
-							 window_attributes.x,
-							 window_attributes.y,
-							 window_attributes.width,
-							 window_attributes.height);
+	             gravity,
+	             window_attributes.x,
+	             window_attributes.y,
+	             window_attributes.width,
+	             window_attributes.height);
 }
 
 static int get_property(Window win, const char * prop_name, unsigned char ** data)
