@@ -201,7 +201,7 @@ void move_window_to(int direction)
 	                      window_attributes.y,
 	                      &window_attributes.x,
 	                      &window_attributes.y,
-												&child) == False)
+	                      &child) == False)
 	{
 		return;
 	}
