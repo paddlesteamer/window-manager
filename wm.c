@@ -214,15 +214,15 @@ void move_window_to(int direction)
 			break;
 		case WM_LEFT:
 			window_attributes.x -= 50; 
-			gravity = 0x1ff;
+			gravity = 0x100;
 			break;
 		case WM_DOWN:
 			window_attributes.y += 50; 
 			gravity = 0x200;
 			break;
 		case WM_UP:
-			window_attributes.y -= 50; 
-			gravity = 0x2ff;
+			window_attributes.y -= 100; 
+			gravity = 0x200;
 			break;
 		default:
 			return;
