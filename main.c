@@ -1,26 +1,32 @@
-#include <unistd.h>
+#include <ncurses.h>
 #include "wm.h"
 
 int main()
 {
-	init_wm();
-	
-	switch_window();
-	usleep(500000);
-	move_window_to(WM_RIGHT);
-	usleep(500000);
-	switch_window();
-	usleep(500000);
-	move_window_to(WM_DOWN);
-	usleep(500000);
-	switch_window();
-	usleep(500000);
-	move_window_to(WM_LEFT);
-	usleep(500000);
-	switch_window();
-	usleep(500000);
-	move_window_to(WM_UP);
-	usleep(500000);
+	int ch;
 
+	init_wm();
+	initscr();
+	
+	while((ch = getch()) != 'q')
+	{
+		switch(ch)
+		{
+			case 'd':
+				move_window_to(WM_RIGHT);
+				break;
+			case 'a':
+				move_window_to(WM_LEFT);
+				break;
+			case 's':
+				move_window_to(WM_DOWN);
+				break;
+			case 'w':
+				move_window_to(WM_UP);
+				break;
+		}
+	}
+
+	endwin();
 	return 0;
 }
