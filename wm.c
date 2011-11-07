@@ -56,7 +56,7 @@ static int init_top_level_window_list()
 {
 	Window root, *client_list;
 	unsigned char *list_data, *id_data;
-	unsigned long list_length, list_size;
+	unsigned long list_length;
 	unsigned long i;
 
 	if (display == NULL) 
@@ -73,9 +73,7 @@ static int init_top_level_window_list()
 	}
 	else if (list_length)
 	{
-		list_size = 32;
-
-		if ( (top_level_window_list.set = (Window *) calloc(list_size, sizeof(Window))) == NULL)
+		if ( (top_level_window_list.set = (Window *) calloc(list_length, sizeof(Window))) == NULL)
 		{
 			return -1;
 		}
