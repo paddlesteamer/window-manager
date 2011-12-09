@@ -217,16 +217,18 @@ void move_window_to(int direction)
 			gravity = 0x100;
 			break;
 		case WM_DOWN:
-			window_attributes.y += 50; 
+			window_attributes.y += 25; 
 			gravity = 0x200;
 			break;
 		case WM_UP:
-			window_attributes.y -= 100; 
+			window_attributes.y -= 50; 
 			gravity = 0x200;
 			break;
 		default:
 			return;
 	}
+
+	gravity |= SouthGravity;
 
 	send_message("_NET_MOVERESIZE_WINDOW",
 	             current_window,
