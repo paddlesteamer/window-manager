@@ -11,5 +11,6 @@ void list_windows();
 void switch_desktop();
 void switch_window();
 void move_window_to(int direction);
+void close_window();
 
 #endif

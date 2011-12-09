@@ -237,6 +237,28 @@ void move_window_to(int direction)
 	             window_attributes.height);
 }
 
+void close_window()
+{
+	unsigned char *current_window_data;
+	Window root, current_window;
+
+	if (display == NULL) return;
+
+	root = XDefaultRootWindow(display);
+
+	if ( get_property(root, "_NET_ACTIVE_WINDOW", &current_window_data) < 0)
+	{
+		return;
+	}
+
+	current_window = *((Window *) current_window_data);
+	XFree(current_window_data);
+
+	send_message("_NET_CLOSE_WINDOW",
+	             current_window,
+							 0,0,0,0,0);
+}
+
 static int get_property(Window win, const char * prop_name, unsigned char ** data)
 {
 	Atom prop_type, ret_prop_type;
