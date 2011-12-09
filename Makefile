@@ -1,4 +1,4 @@
-test1: wm.c wm.h test1.c
+test1: wm test1.c
 	gcc -o test1 -Wall -lX11 -lncurses -D_64_BIT_OS wm.o test1.c
 
 test2: wm test2.c
